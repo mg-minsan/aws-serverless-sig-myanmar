@@ -40,6 +40,20 @@ Resources:
           Properties:
             Bucket: !Ref ServerlessMeetup
             Events: s3:ObjectCreated:*
+  GetFilesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: get-files/
+      Handler: get-files
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref FileMetadata
+      Events:
+        CatchAll:
+          Type: Api
+          Properties:
+            Method: GET
+            Path: /files
   ServerlessMeetup:
     Type: AWS::S3::Bucket
 

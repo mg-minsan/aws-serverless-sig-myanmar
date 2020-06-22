@@ -25,13 +25,6 @@ func handler(ctx context.Context, event events.S3Event){
   sess := session.Must(session.NewSessionWithOptions(session.Options{
     SharedConfigState: session.SharedConfigEnable,
   }))
-  /*
-  svc := dynamodb.New(sess, &aws.Config{
-    Region:   aws.String("us-west-2"),
-    Endpoint: aws.String("http://dynamodb-local:8000"),
-  })
-  */
-
   svc := dynamodb.New(sess)
   for _, record := range event.Records {
     s3 := record.S3

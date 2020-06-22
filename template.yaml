@@ -26,6 +26,31 @@ Resources:
       Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
         Variables:
           PARAM1: VALUE
+  FileAnalyserFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: file-analyser/
+      Handler: file-analyser
+      Policies:
+        - DynamoDBWritePolicy:
+            TableName: !Ref FileMetadata
+      Events:
+        UploadEvent:
+          Type: S3
+          Properties:
+            Bucket: !Ref ServerlessMeetup
+            Events: s3:ObjectCreated:*
+  ServerlessMeetup:
+    Type: AWS::S3::Bucket
+
+  FileMetadata:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      TableName: FileMetadata
+      PrimaryKey:
+        Name: Key
+        Type: String
+
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
@@ -33,4 +58,10 @@ Outputs:
   API:
     Description: "API Gateway endpoint URL for Prod environment for First Function"
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
+  FileAnalyserFunction:
+    Description: "First Lambda Function ARN"
+    Value: !GetAtt FileAnalyserFunction.Arn
+  FileAnalyserFunctionIAMRole:
+    Description: "Implicit IAM Role created for Hello World function"
+    Value: !GetAtt FileAnalyserFunction.Arn
 

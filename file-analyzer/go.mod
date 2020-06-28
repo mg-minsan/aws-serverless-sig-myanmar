@@ -1,4 +1,4 @@
-module file-analyser
+module file-analyzer
 
 go 1.13
 

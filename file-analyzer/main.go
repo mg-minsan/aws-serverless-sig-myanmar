@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"log"
 	"time"
 
@@ -21,7 +22,7 @@ func main(){
   lambda.Start(handler)
 }
 
-func handler(ctx context.Context, event events.S3Event){
+func handler(ctx context.Context, event events.S3Event) error{
   sess := session.Must(session.NewSessionWithOptions(session.Options{
     SharedConfigState: session.SharedConfigEnable,
   }))
@@ -35,7 +36,7 @@ func handler(ctx context.Context, event events.S3Event){
     }
     av, err := dynamodbattribute.MarshalMap(item)
     if err != nil {
-      log.Println("Got error marshalling new movie item:")
+      return errors.New("Got error marshalling new movie item:")
     }
     input := &dynamodb.PutItemInput{
       Item:      av,
@@ -43,9 +44,10 @@ func handler(ctx context.Context, event events.S3Event){
     }
     _, err = svc.PutItem(input)
     if err != nil{
-      log.Print(err)
+      return err
     }
-    log.Print("Uploaded")
   }
+    log.Print("Uploaded")
+    return nil
 }
 

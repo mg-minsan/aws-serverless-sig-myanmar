@@ -10,27 +10,11 @@ Globals:
       Runtime: go1.x
       Timeout: 5
 Resources:
-  HelloWorldFunction:
+  FileAnalyzerFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      CodeUri: hello-world/
-      Handler: hello-world
-      Runtime: go1.x
-      Tracing: Active # https://docs.aws.amazon.com/lambda/latest/dg/lambda-x-ray.html
-      Events:
-        CatchAll:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
-          Properties:
-            Path: /hello
-            Method: GET
-      Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
-        Variables:
-          PARAM1: VALUE
-  FileAnalyserFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-    Properties:
-      CodeUri: file-analyser/
-      Handler: file-analyser
+      CodeUri: file-analyzer/
+      Handler: file-analyzer
       Policies:
         - DynamoDBWritePolicy:
             TableName: !Ref FileMetadata
@@ -72,10 +56,9 @@ Outputs:
   API:
     Description: "API Gateway endpoint URL for Prod environment for First Function"
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
-  FileAnalyserFunction:
+  FileAnalyzerFunction:
     Description: "First Lambda Function ARN"
-    Value: !GetAtt FileAnalyserFunction.Arn
-  FileAnalyserFunctionIAMRole:
-    Description: "Implicit IAM Role created for Hello World function"
-    Value: !GetAtt FileAnalyserFunction.Arn
-
+    Value: !GetAtt FileAnalyzerFunction.Arn
+  MeetupBucket:
+    Value: !Ref ServerlessMeetup
+    Description: URL for website hosted on S3
